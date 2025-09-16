@@ -23,16 +23,21 @@ jobs:
 
       - name: Upload to HuggingFace Space
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}   # ✅ use secret here
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}   # ✅ use GitHub secret
         run: |
           python - <<'EOF'
+          import os
           from huggingface_hub import HfApi
+
+          repo_id = "Jurk06/ML-React-APP"   # 👈 your HuggingFace Space repo
+          token = os.environ["HF_TOKEN"]    # ✅ correctly read env var
+
           api = HfApi()
-          repo_id = "Jurk06/ML-React-APP"   # 👈 your space ID
           api.upload_folder(
-              folder_path=".",  # push everything (or ./frontend, ./backend etc.)
+              folder_path=".",    # you can change to "./frontend" if only frontend
               repo_id=repo_id,
               repo_type="space",
-              token="${HF_TOKEN}"
+              token=token
           )
+          print("✅ Successfully pushed to HuggingFace Space:", repo_id)
           EOF
