@@ -1,37 +1,36 @@
-name: Deploy to Hugging Face Space
+name: Deploy to HuggingFace Space
 
 on:
   push:
     branches:
-      - main   # or your deployment branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
-        run: |
-          pip install huggingface_hub
+        run: pip install huggingface_hub
 
-      - name: Push to Hugging Face Space
+      - name: Upload to HuggingFace Space
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}   # ✅ use secret here
         run: |
           python - <<'EOF'
           from huggingface_hub import HfApi
           api = HfApi()
-          repo_id = "Jurk06/ML-React-APP"  # 👈 update this
+          repo_id = "Jurk06/ML-React-APP"   # 👈 your space ID
           api.upload_folder(
-              folder_path=".",       # push everything (or limit e.g. ./backend ./frontend)
+              folder_path=".",  # push everything (or ./frontend, ./backend etc.)
               repo_id=repo_id,
               repo_type="space",
               token="${HF_TOKEN}"
