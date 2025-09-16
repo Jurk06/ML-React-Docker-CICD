@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
 
 app = FastAPI()
 
@@ -24,6 +28,9 @@ class HousingRequest(BaseModel):
     Latitude: float
     Longitude: float
 
+# Serve frontend build
+
+
 @app.post("/predict")
 def predict(request: HousingRequest):
     # Dummy prediction formula (replace with ML model)
@@ -38,3 +45,10 @@ def predict(request: HousingRequest):
         - request.Longitude * 500
     )
     return {"prediction": prediction}
+frontend_path = os.path.join(os.path.dirname(__file__), "../frontend/dist")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
+    @app.get("/")
+    def serve_index():
+        return FileResponse(os.path.join(frontend_path, "index.html"))
